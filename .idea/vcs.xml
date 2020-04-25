@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/Control Panel/MyApp_repo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Control Panel/repo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Control Panel/repo/clonedrepo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/arduino/ESP8266/android-esp8266-connect" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/arduino/FirebaseDemo_ESP8266/ESP8266/android-esp8266-connect" vcs="Git" />
+  </component>
+</project>

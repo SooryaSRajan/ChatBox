@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ChatBox</string>
+    <string name="text_box">Type Something...</string>
+    <string name="title_activity_setup">Setup</string>
+</resources>

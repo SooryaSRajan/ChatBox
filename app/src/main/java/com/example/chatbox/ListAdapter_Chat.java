@@ -13,26 +13,22 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 import static com.example.chatbox.Constants.CHATS;
 import static com.example.chatbox.Constants.NAME;
-import static com.example.chatbox.Constants.OTHER_ID;
 import static com.example.chatbox.Constants.TIME_STAMP;
 import static com.example.chatbox.Constants.USER_NAME;
 
 
-public class ListViewAdapter extends BaseAdapter {
+public class ListAdapter_Chat extends BaseAdapter {
 
     public ArrayList<HashMap> list;
     Activity activity;
     int layout;
 
-    public ListViewAdapter(Activity activity, ArrayList<HashMap> list, int layout ) {
+    public ListAdapter_Chat(Activity activity, ArrayList<HashMap> list) {
         super();
         this.activity = activity;
         this.list = list;
-        this.layout = layout;
     }
 
     @Override
@@ -55,8 +51,7 @@ public class ListViewAdapter extends BaseAdapter {
 
     private class ViewHolder {
         TextView txtFirst;
-        TextView txtSecond;
-        TextView txtThird;
+
     }
 
     @Override
@@ -65,24 +60,13 @@ public class ListViewAdapter extends BaseAdapter {
         LayoutInflater inflater = activity.getLayoutInflater();
         HashMap map = list.get(position);
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
-            if(mAuth.getUid().contains(map.get(OTHER_ID).toString()))
-            convertView = inflater.inflate(R.layout.listview_user, null);
-
-            else{
-                convertView = inflater.inflate(R.layout.listview, null);
-            }
-            holder = new ViewHolder();
-            holder.txtFirst = convertView.findViewById(R.id.chat_text);
-            holder.txtSecond = convertView.findViewById(R.id.user_name);
-            holder.txtThird = convertView.findViewById(R.id.time_stamp);
-            convertView.setTag(holder);
+        convertView = inflater.inflate(R.layout.chat_room_user, null);
+        holder = new ViewHolder();
+        holder.txtFirst = convertView.findViewById(R.id.user_name_list);
+        convertView.setTag(holder);
 
 
-        holder.txtFirst.setText(map.get(CHATS).toString());
-        holder.txtSecond.setText( map.get(NAME).toString());
-        holder.txtThird.setText( map.get(TIME_STAMP).toString());
+        holder.txtFirst.setText(map.get(NAME).toString());
 
         return convertView;
     }

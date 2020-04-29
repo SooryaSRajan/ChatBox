@@ -8,23 +8,27 @@
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="675dp"
+        android:layout_height="match_parent"
+        android:layout_above="@id/text_Box"
         android:id="@+id/List_ViewChatBox"/>
 
     <EditText
         android:id="@+id/text_Box"
-        android:layout_width="340dp"
+        android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/send_button"
         android:hint="@string/text_box"
+        android:inputType="textCapSentences"
+        android:background="@color/colorWhite"
         android:padding="15dp" />
 
     <ImageButton
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:id="@+id/send_button"
-        android:layout_toEndOf="@id/text_Box"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
         android:src="@drawable/ic_send_45dp"
         style="@style/MainXML_button"
         android:layout_margin="0dp"

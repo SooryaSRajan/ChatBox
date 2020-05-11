@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OTP_Number">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_margin="20dp"
+        android:layout_above="@+id/otp"
+        android:inputType="phone"
+        android:hint="Enter Phone Number..."
+        android:id="@+id/phone_number"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:inputType="number"
+        android:maxLength="6"
+        android:hint="Enter OTP..."
+        android:layout_margin="20dp"
+        android:layout_centerInParent="true"
+        android:id="@+id/otp" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_margin="20dp"
+        android:layout_height="50dp"
+        android:id="@+id/send_otp"
+        android:text="GENERATE OTP"
+        android:layout_below="@+id/otp"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="20dp"
+        android:id="@+id/verify"
+        android:text="VERIFY"
+        android:layout_below="@+id/send_otp"/>
+
+</RelativeLayout>

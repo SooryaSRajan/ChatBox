@@ -10,6 +10,8 @@ public class Constants {
     public static final String SHARED_PREFERENCE = "MySharedPreference";
     public static final String SHARED_PREFERENCE_NAME = "User Name";
     public static String EMAIL_STATE = "MySharedPrefStater";
-    public static String PASSWORD_STATE = "null";
+    public static String NUMBER_STATE = "MySharedPrefNumber";
+    public static String NAME_STATE = "MySharedPrefName";
+    public static String OTHER_NAME = "null";
 
 }

@@ -24,7 +24,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import static com.example.chatbox.Constants.EMAIL_STATE;
-import static com.example.chatbox.Constants.PASSWORD_STATE;
+import static com.example.chatbox.Constants.NAME_STATE;
+import static com.example.chatbox.Constants.NUMBER_STATE;
 import static com.example.chatbox.Constants.SHARED_PREFERENCE;
 import static com.example.chatbox.Constants.USER_NAME;
 
@@ -33,18 +34,7 @@ public class email_login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences preferences = getSharedPreferences(SHARED_PREFERENCE, Context.MODE_PRIVATE);
-        try {
-            if (preferences.contains(EMAIL_STATE) && preferences.contains(PASSWORD_STATE)) {
-                String email = preferences.getString(EMAIL_STATE, "null");
-                String password = preferences.getString(PASSWORD_STATE, "null");
-                loginFirebase(email.trim(), password.trim(),1);
-            }
 
-        }
-        catch (Exception e){
-            Log.e("Shared preference register", "onCreate: If condition error");
-        }
         setContentView(R.layout.activity_email_login);
         Button button = findViewById(R.id.login);
         button.setOnClickListener(new View.OnClickListener() {
@@ -81,36 +71,11 @@ public void loginFirebase(final String email, final String password, final int f
             if(flag==0) {
                 SharedPreferences preferences = getSharedPreferences(SHARED_PREFERENCE, Context.MODE_PRIVATE);
                 SharedPreferences.Editor myEdit = preferences.edit();
-
                 myEdit.putString(EMAIL_STATE, email);
-                myEdit.putString(PASSWORD_STATE, password);
-
+                myEdit.putString(NUMBER_STATE, email);
+                myEdit.putString(NAME_STATE, email);
                 myEdit.commit();
             }
-
-            else{
-                final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                FirebaseDatabase database =FirebaseDatabase.getInstance();
-                DatabaseReference ref = database.getReference();
-
-                ValueEventListener listener2 = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot ds : dataSnapshot.child("users").getChildren()){
-                            if (ds.getKey().contains(mAuth.getUid())){
-                                USER_NAME=ds.child("NAME").getValue(String.class);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                };
-                ref.addValueEventListener(listener2);
-            }
-
             Intent intent = new Intent(email_login.this, ChatRoom_Inflate.class);
             startActivity(intent);
             finish();

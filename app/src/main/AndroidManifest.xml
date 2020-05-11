@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.chatbox">
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -11,6 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".OTP_Number">
+        </activity>
         <activity android:name=".email_create" />
         <activity android:name=".email_login" />
         <activity android:name=".email_register">
@@ -23,7 +26,7 @@
         <activity android:name=".ChatRoom_Inflate" />
         <activity android:name=".Change_Name" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".Setup"></activity>
+        <activity android:name=".Setup" />
     </application>
 
 </manifest>

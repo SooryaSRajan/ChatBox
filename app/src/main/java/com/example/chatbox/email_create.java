@@ -22,9 +22,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import static com.example.chatbox.Constants.EMAIL_STATE;
-import static com.example.chatbox.Constants.PASSWORD_STATE;
+
 import static com.example.chatbox.Constants.SHARED_PREFERENCE;
-import static com.example.chatbox.Constants.SHARED_PREFERENCE_NAME;
 
 public class email_create extends AppCompatActivity {
     private String email_string, password1_string, password2_string;
@@ -67,6 +66,7 @@ public class email_create extends AppCompatActivity {
         final SharedPreferences preferences = this.getSharedPreferences(SHARED_PREFERENCE, Context.MODE_PRIVATE);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
+        final DatabaseReference mRef = mDatabase.getReference();
         mAuth.createUserWithEmailAndPassword(email_string, password1_string).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -76,13 +76,11 @@ public class email_create extends AppCompatActivity {
                     try {
                         SharedPreferences.Editor myEdit = preferences.edit();
                         myEdit.putString(EMAIL_STATE, email_string);
-                        myEdit.putString(PASSWORD_STATE, password1_string);
-
                         myEdit.commit();
                     } catch (Exception e) {
                         Log.e("shared_pref_tag", e.toString());
                     }
-                    Intent intent = new Intent(email_create.this, Setup.class);
+                    Intent intent = new Intent(email_create.this, OTP_Number.class);
                     startActivity(intent);
                     finish();
                 } else {

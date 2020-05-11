@@ -4,11 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,8 +34,10 @@ import java.util.HashMap;
 
 import static com.example.chatbox.Constants.EMAIL_STATE;
 import static com.example.chatbox.Constants.NAME;
+import static com.example.chatbox.Constants.NAME_STATE;
+import static com.example.chatbox.Constants.NUMBER_STATE;
 import static com.example.chatbox.Constants.OTHER_ID;
-import static com.example.chatbox.Constants.PASSWORD_STATE;
+import static com.example.chatbox.Constants.OTHER_NAME;
 import static com.example.chatbox.Constants.SHARED_PREFERENCE;
 import static com.example.chatbox.Constants.USER_ID;
 import static com.example.chatbox.Constants.USER_NAME;
@@ -40,21 +45,20 @@ import static com.example.chatbox.Constants.USER_NAME;
 public class ChatRoom_Inflate extends AppCompatActivity {
    public ArrayList<String> list = new ArrayList();
    public ArrayList<String> list1 = new ArrayList();
+   private ValueEventListener eventListener;
+   private FirebaseDatabase database = FirebaseDatabase.getInstance();
+   private DatabaseReference mRef;
+    ArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room__inflate);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference mRef = database.getReference();
-
         final FirebaseAuth auth = FirebaseAuth.getInstance();
         final ListView list_view = findViewById(R.id.chat_room_list_view);
-        //final ArrayList<HashMap> list = new ArrayList();
-        ArrayAdapter adapter;
-
-        ValueEventListener eventListener = new ValueEventListener() {
+        mRef = database.getReference();
+        eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -63,14 +67,18 @@ public class ChatRoom_Inflate extends AppCompatActivity {
                     for (DataSnapshot ds : dataSnapshot.child("users").getChildren()) {
                         String name = ds.child("NAME").getValue(String.class);
                         if (!ds.getKey().contains(auth.getUid())) {
-                            list.add(name);
-                            list1.add(ds.getKey().trim());
-                            Toast.makeText(ChatRoom_Inflate.this, ds.getKey(), Toast.LENGTH_SHORT).show();
-                    }
+                            //Toast.makeText(ChatRoom_Inflate.this, ds.child("phone").getValue(String.class), Toast.LENGTH_SHORT).show();
+                            if(contactExists(getApplicationContext(), ds.child("phone").getValue(String.class).trim())){
+                                list.add(name);
+                                list1.add(ds.getKey().trim());
+                            }
 
-
+                      }
+                        else{
+                            USER_NAME = name;
+                        }
                 }
-                    ArrayAdapter adapter = new ArrayAdapter<String>(ChatRoom_Inflate.this,R.layout.chat_room_user,R.id.user_name_list, list);
+                    adapter = new ArrayAdapter<>(ChatRoom_Inflate.this,R.layout.chat_room_user,R.id.user_name_list, list);
                     list_view.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 }
@@ -83,17 +91,14 @@ public class ChatRoom_Inflate extends AppCompatActivity {
         mRef.addValueEventListener(eventListener);
 
         try {
-
-
             list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent,
                                         View view, int position, long id) {
-                    Toast.makeText(ChatRoom_Inflate.this, list1.get(position), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(ChatRoom_Inflate.this,MainActivity.class);
                     intent.putExtra(OTHER_ID,list1.get(position));
+                    OTHER_NAME = list.get(position);
                     startActivity(intent);
-                    finish();
                 }
             });
         }
@@ -101,7 +106,6 @@ public class ChatRoom_Inflate extends AppCompatActivity {
             Log.e("ItemClick",e.toString());
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -123,7 +127,8 @@ public class ChatRoom_Inflate extends AppCompatActivity {
                             SharedPreferences preferences = getSharedPreferences(SHARED_PREFERENCE, Context.MODE_PRIVATE);
                             SharedPreferences.Editor myEdit = preferences.edit();
                             myEdit.remove(EMAIL_STATE);
-                            myEdit.remove(PASSWORD_STATE);
+                            myEdit.remove(NAME_STATE);
+                            myEdit.remove(NUMBER_STATE);
                             myEdit.commit();
                             Intent intent = new Intent(ChatRoom_Inflate.this, email_register.class);
                             startActivity(intent);
@@ -132,6 +137,51 @@ public class ChatRoom_Inflate extends AppCompatActivity {
                     }).setNegativeButton("No",null).create();
             builder.show();
         }
+
+        else if (item.getItemId() == R.id.change_name) {
+            Intent intent = new Intent(ChatRoom_Inflate.this, Change_Name.class);
+            startActivity(intent);
+        }
+
         return super.onOptionsItemSelected(item);
     }
+
+    public boolean contactExists(Context context, String number) {
+        if (number != null) {
+            ContentResolver cr = context.getContentResolver();
+            Cursor curContacts = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+
+            while (curContacts.moveToNext()) {
+                String contactNumber = curContacts.getString(curContacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                if (number.contains(contactNumber)) {
+                    Toast.makeText(context, number, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Are You Sure You Want To Exit?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        }).setNegativeButton("No",null).create();
+        builder.show();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mRef.removeEventListener(eventListener);
+    }
 }
+
+

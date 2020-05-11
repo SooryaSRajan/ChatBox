@@ -3,7 +3,9 @@ package com.example.chatbox;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,6 +36,7 @@ import java.util.HashMap;
 import static com.example.chatbox.Constants.CHATS;
 import static com.example.chatbox.Constants.NAME;
 import static com.example.chatbox.Constants.OTHER_ID;
+import static com.example.chatbox.Constants.OTHER_NAME;
 import static com.example.chatbox.Constants.TIME_STAMP;
 import static com.example.chatbox.Constants.USER_ID;
 import static com.example.chatbox.Constants.USER_NAME;
@@ -44,11 +47,13 @@ public class MainActivity extends AppCompatActivity {
     ListView list_view;
     public String user_message;
     public String time;
-    ListViewAdapter list_view_adapter;
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference ref = database.getReference();
+    private ListViewAdapter list_view_adapter;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference ref = database.getReference();
+    private ValueEventListener eventListener;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     String other_id;
+    boolean flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         other_id = intent.getStringExtra(OTHER_ID).trim();
 
-        ValueEventListener eventListener = new ValueEventListener() {
+         eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list.clear();
@@ -66,16 +71,13 @@ public class MainActivity extends AppCompatActivity {
                     for (DataSnapshot ds : dataSnapshot.child("Messages").getChildren()) {
                         String userId = ds.getKey();
                         String chats = ds.child(CHATS).getValue(String.class);
-                        String name = ds.child(NAME).getValue(String.class);
                         String time = ds.child(TIME_STAMP).getValue(String.class);
                         String id_mine = ds.child(USER_ID).getValue(String.class);
                         String id_other = ds.child(OTHER_ID).getValue(String.class);
-
                         if(id_mine.contains(mAuth.getUid()) && id_mine.contains(other_id)){
                         try {
                                 HashMap map = new HashMap();
                                 map.put(CHATS, chats);
-                                map.put(NAME, name);
                                 map.put(TIME_STAMP, time);
                                 map.put(OTHER_ID, id_other);
 
@@ -103,20 +105,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
         ref.addValueEventListener(eventListener);
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_inflater,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.change_name) {
-            Intent intent = new Intent(MainActivity.this, Change_Name.class);
-            startActivity(intent);
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -147,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         if(a==1){
 
             HashMap temp = new HashMap();
-            temp.put(NAME,USER_NAME);
+            //temp.put(NAME,USER_NAME);
             temp.put(CHATS,user_message);
             getTime();
             temp.put(TIME_STAMP,time);
@@ -190,5 +178,11 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
         Intent intent = new Intent(this, ChatRoom_Inflate.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ref.removeEventListener(eventListener);
     }
 }

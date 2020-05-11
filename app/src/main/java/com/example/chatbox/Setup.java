@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import static com.example.chatbox.Constants.NAME_STATE;
 import static com.example.chatbox.Constants.SHARED_PREFERENCE;
 import static com.example.chatbox.Constants.SHARED_PREFERENCE_NAME;
 import static com.example.chatbox.Constants.USER_NAME;
@@ -45,10 +46,17 @@ public class Setup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SharedPreferences preferences = getSharedPreferences(SHARED_PREFERENCE, Context.MODE_PRIVATE);
+        try{
+            if(preferences.contains(NAME_STATE)){
+                Intent intent = new Intent(Setup.this, ChatRoom_Inflate.class);
+                startActivity(intent);
+                finish();
+            }
+        }
+        catch (Exception e){}
         setContentView(R.layout.content_setup);
 
     }
-
 
     @Override
     protected void onStart() {
@@ -58,7 +66,6 @@ public class Setup extends AppCompatActivity {
         final TextView alert = findViewById(R.id.alert);
         final EditText edit = findViewById(R.id.user_name);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final FirebaseAuth mAuth = FirebaseAuth.getInstance();
         final DatabaseReference ref = database.getReference();
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -88,8 +95,15 @@ public class Setup extends AppCompatActivity {
                     name = name.trim();
                     ref.child("users").child(user.getUid()).child("NAME").setValue(name);
                     USER_NAME = name;
+
+                    SharedPreferences preferences = getSharedPreferences(SHARED_PREFERENCE, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor myEdit = preferences.edit();
+                    myEdit.putString(NAME_STATE, name);
+                    myEdit.commit();
+
                     Intent intent = new Intent(Setup.this, ChatRoom_Inflate.class);
                     startActivity(intent);
+                    finish();
                 }
             }
         });

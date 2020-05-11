@@ -16,8 +16,8 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 
 import static com.example.chatbox.Constants.CHATS;
-import static com.example.chatbox.Constants.NAME;
 import static com.example.chatbox.Constants.OTHER_ID;
+import static com.example.chatbox.Constants.OTHER_NAME;
 import static com.example.chatbox.Constants.TIME_STAMP;
 import static com.example.chatbox.Constants.USER_NAME;
 
@@ -81,7 +81,12 @@ public class ListViewAdapter extends BaseAdapter {
 
 
         holder.txtFirst.setText(map.get(CHATS).toString());
-        holder.txtSecond.setText( map.get(NAME).toString());
+        if(mAuth.getUid().contains(map.get(OTHER_ID).toString())) {
+            holder.txtSecond.setText(USER_NAME);
+        }
+        else{
+            holder.txtSecond.setText(OTHER_NAME);
+        }
         holder.txtThird.setText( map.get(TIME_STAMP).toString());
 
         return convertView;

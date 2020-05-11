@@ -10,11 +10,17 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import static com.example.chatbox.Constants.SHARED_PREFERENCE;
 import static com.example.chatbox.Constants.SHARED_PREFERENCE_NAME;
@@ -41,8 +47,9 @@ public class Change_Name extends AppCompatActivity {
         Button user_button = findViewById(R.id.submit_button);
         final TextView alert = findViewById(R.id.alert);
         final EditText edit = findViewById(R.id.user_name);
-        SharedPreferences preferences = getSharedPreferences(SHARED_PREFERENCE, Context.MODE_PRIVATE);
-        final SharedPreferences.Editor myEdit = preferences.edit();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference ref = database.getReference();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         user_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,9 +69,8 @@ public class Change_Name extends AppCompatActivity {
                         Toast.makeText(Change_Name.this, "Your name has been changed", Toast.LENGTH_SHORT).show();
                         name = name.trim();
                         USER_NAME = name;
-                        myEdit.putString(SHARED_PREFERENCE_NAME,name);
-                        myEdit.commit();
-                        Intent intent = new Intent(Change_Name.this, MainActivity.class);
+                        ref.child("users").child(user.getUid()).child("NAME").setValue(name);
+                        Intent intent = new Intent(Change_Name.this, ChatRoom_Inflate.class);
                         startActivity(intent);
                     }
                 }
@@ -75,8 +81,10 @@ public class Change_Name extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ChatRoom_Inflate.class);
         startActivity(intent);
+        finish();
 
     }
+
 }
